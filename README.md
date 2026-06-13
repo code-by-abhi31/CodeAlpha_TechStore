@@ -1,5 +1,4 @@
 # Full-Stack E-Commerce Engine 🛒
-Built for the **@CodeAlpha** Software Engineering Internship (Task 1).
 
 ### 🚀 Features
 * **Live Inventory Simulation:** Background processes deduct stock dynamically to simulate real-world traffic.
