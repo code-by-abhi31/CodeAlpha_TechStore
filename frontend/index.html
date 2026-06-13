@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Tech Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Modern Design System Tokens */
+        :root {
+            --bg-primary: #f8fafc;
+            --surface-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* NEW: Dark Mode Overrides */
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --surface-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.8);
+        }
+
+        /* Fix the active category button text color in dark mode */
+        [data-theme="dark"] .filter-btn.active {
+            background: var(--text-main); 
+            color: var(--bg-primary); /* This flips the text to a dark color! */
+            border-color: var(--text-main);
+        }
+
+        /* Add a smooth fade transition to the background so it doesn't blink harshly */
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Fix hardcoded borders to look good in dark mode */
+        [data-theme="dark"] .product-card, 
+        [data-theme="dark"] .filter-btn, 
+        [data-theme="dark"] header, 
+        [data-theme="dark"] #cart-modal,
+        [data-theme="dark"] #auth-modal,
+        [data-theme="dark"] #search-bar {
+            border-color: #334155;
+            background: var(--surface-card);
+            color: var(--text-main);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+        }
+
+        /* Premium Navbar Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface-card);
+            padding: 20px 40px;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Modern UI Button Foundations */
+        .btn-ui {
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            border: 1px solid #e2e8f0;
+            background: var(--surface-card);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-ui:hover {
+            border-color: var(--text-muted);
+            background: #f1f5f9;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Smooth Product Grid Layout */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* High-End Product Display Cards */
+        .product-card {
+            background: var(--surface-card);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #f1f5f9;
+        }
+
+        /* Elevation interaction */
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .img-wrapper {
+            background: #f8fafc;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .product-card img {
+            max-height: 160px;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        .product-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+
+        .product-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0 0 20px 0;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .price-tag {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Dynamic Category Filtering */
+        .category-filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto; /* Allows swiping on mobile */
+            padding-bottom: 8px;
+        }
+
+        .filter-btn {
+            background: var(--surface-card);
+            border: 1px solid #e2e8f0;
+            padding: 8px 18px;
+            border-radius: 20px; /* Modern pill shape */
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: var(--transition-smooth);
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .filter-btn.active {
+            background: var(--text-main);
+            color: white;
+            border-color: var(--text-main);
+        }
+        
+        /* Sleek Slide-Out Cart Drawer Layout */
+        #cart-modal {
+            display: block;
+            position: fixed;
+            top: 0;
+            right: -400px; /* Hidden offscreen by default */
+            width: 360px;
+            height: 100vh;
+            background: var(--surface-card);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+            transition: var(--transition-smooth);
+            z-index: 100;
+            padding: 40px 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Add this helper class dynamically via JS to open the drawer */
+        #cart-modal.open {
+            right: 0;
+        }
+
+        #cart-modal h2 {
+            font-size: 22px;
+            margin: 0 0 24px 0;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 15px;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        #cart-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        #cart-items li div h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        #cart-items li div span {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .remove-btn {
+            background: transparent;
+            color: var(--danger-color);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .cart-summary {
+            margin-top: auto;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Authentication Floating Dialog Box */
+        #auth-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--surface-card);
+            padding: 35px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+            z-index: 200;
+            width: 100%;
+            max-width: 380px;
+            box-sizing: border-box;
+        }
+
+        #auth-modal h2 {
+            margin: 0 0 20px 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: var(--transition-smooth);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        /* --- Toast Notification System --- */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast-notification {
+            background: var(--surface-card);
+            color: var(--text-main);
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-md);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%); /* Hidden off-screen to the right */
+            opacity: 0;
+            transition: var(--transition-smooth);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        /* This class is added by Javascript to trigger the slide-in animation */
+        .toast-notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-success { border-left-color: var(--success-color); }
+        .toast-error { border-left-color: var(--danger-color); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>TechStore.</h1>
+        <div class="nav-controls">
+            
+            <div id="user-status" style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn-ui" onclick="toggleAuthModal('login')">Sign In</button>
+                <button class="btn-ui btn-primary" onclick="toggleAuthModal('register')">Register</button>
+            </div>
+            
+            <button class="btn-ui" id="theme-toggle-btn" onclick="toggleTheme()" style="font-size: 16px; padding: 8px 12px;" title="Toggle Dark Mode">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            
+            <button class="btn-ui" onclick="toggleCart()">
+                <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cart-count">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+            
+            <div style="position: relative; flex: 1; min-width: 250px;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                <input type="text" id="search-bar" oninput="applyFilters()" placeholder="Search for laptops, smartphones, accessories..." 
+                       style="width: 100%; padding: 14px 20px 14px 45px; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); font-family: inherit; font-size: 15px; box-sizing: border-box; box-shadow: var(--shadow-sm); outline: none; background: var(--surface-card); color: var(--text-main); transition: var(--transition-smooth);">
+            </div>
+
+            <select id="sort-select" onchange="applyFilters()" style="padding: 14px 20px; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); font-family: inherit; font-size: 15px; box-shadow: var(--shadow-sm); outline: none; background: var(--surface-card); color: var(--text-main); cursor: pointer; min-width: 200px;">
+                <option value="default">Sort by: Featured</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="rating-desc">Rating: High to Low</option>
+                <option value="rating-asc">Rating: Low to High</option>
+            </select>
+            
+        </div>
+
+        <div class="category-filters" id="category-filters">
+            <button class="filter-btn active" onclick="setCategory('All')">All</button>
+            <button class="filter-btn" onclick="setCategory('Laptops')">Laptops</button>
+            <button class="filter-btn" onclick="setCategory('Smartphones')">Smartphones</button>
+            <button class="filter-btn" onclick="setCategory('Tablets')">Tablets</button>
+            <button class="filter-btn" onclick="setCategory('Accessories')">Accessories</button>
+        </div>
+
+        <div class="product-grid" id="product-container">
+            <p>Gathering items from warehouse...</p>
+        </div>
+    </div>
+
+    <div id="cart-modal">
+        <h2>Shopping Cart</h2>
+        <ul id="cart-items"></ul>
+        
+        <div style="margin-bottom: 20px; text-align: left; padding-top: 15px; border-top: 1px solid #64748b;">
+            <label for="checkout-address" style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Shipping Address:</label>
+            <textarea id="checkout-address" placeholder="123 Tech Lane, Suite 400..." rows="3" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); font-family: inherit; font-size: 14px; box-sizing: border-box; background: var(--bg-primary); color: var(--text-main); outline: none; resize: vertical; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);"></textarea>
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>$<span id="cart-total">0.00</span></span>
+            </div>
+            
+            <button class="btn-ui btn-primary" style="width: 100%; padding: 14px; margin-bottom: 10px;" onclick="checkout()">Secure Checkout</button>
+            <button class="btn-ui" style="width: 100%; padding: 14px;" onclick="toggleCart()">Continue Shopping</button>
+        </div>
+    </div>
+
+    <div id="auth-modal">
+        <h2 id="auth-title">Sign In</h2>
+        <div class="input-group">
+            <input type="text" id="auth-username" placeholder="Username">
+        </div>
+        <div class="input-group">
+            <input type="password" id="auth-password" placeholder="Password">
+        </div>
+        <button class="btn-ui btn-primary" id="auth-submit-btn" style="width: 100%; padding: 12px; margin-bottom: 10px;">Continue</button>
+        <button class="btn-ui" style="width: 100%; padding: 12px; color: var(--danger-color);" onclick="document.getElementById('auth-modal').style.display='none'">Dismiss</button>
+    </div>
+
+    <div id="account-modal" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); background: var(--surface-card); color: var(--text-main); padding: 30px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 200; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; border: 1px solid #334155;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #64748b; padding-bottom: 15px; margin-bottom: 20px;">
+            <h2 style="margin: 0;">My Account</h2>
+            <button class="btn-ui" onclick="closeAccount()">Close</button>
+        </div>
+
+        <h3>Order History</h3>
+        <div id="order-history-list">
+            <p style="color: var(--text-muted);">Loading past orders...</p>
+        </div>
+
+        <h3 style="margin-top: 30px;">My Wishlist <i class="fa-solid fa-heart" style="color: var(--danger-color);"></i></h3>
+        <div id="wishlist-container">
+            <p style="color: var(--text-muted);">Loading wishlist...</p>
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #64748b; padding-top: 20px;">
+            <button class="btn-ui btn-primary" style="background: var(--danger-color); width: 100%;" onclick="logout()">Sign Out of TechStore</button>
+        </div>
+    </div>
+    <div id="toast-container"></div>
+    <div id="product-modal" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); background: var(--surface-card); color: var(--text-main); padding: 30px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 200; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto; border: 1px solid #334155;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #64748b; padding-bottom: 15px;">
+            <h2 style="margin: 0;">Product Details</h2>
+            <button class="btn-ui" onclick="closeProductModal()">
+                <i class="fa-solid fa-xmark"></i> Close
+            </button>
+        </div>
+
+        <div id="product-details-content" style="display: flex; flex-wrap: wrap; gap: 30px;">
+        </div>
+        
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
